@@ -1,0 +1,138 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-3xl font-bold text-gray-900">Grupos</h1>
+      <p class="mt-2 text-sm text-gray-700">
+        Lista de grupos para compartir gastos.
+      </p>
+    </div>
+    <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+      <a
+        [routerLink]= "['/groups/create']"
+        class="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+      >
+        Crear grupo
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="mt-8 text-center">
+    <div
+      class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+    ></div>
+    <p class="mt-2 text-gray-600">Cargando grupos...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="mt-8 rounded-md bg-red-50 p-4">
+    <div class="flex">
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-red-800">Error</h3>
+        <div class="mt-2 text-sm text-red-700">
+          <p>{{ error }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Groups Grid -->
+  <div *ngIf="!loading && !error" class="mt-8">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        *ngFor="let group of groups"
+        class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow"
+      >
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium text-gray-900 truncate">
+              {{ group.name }}
+            </h3>
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+            >
+              {{ group.members?.length || 0 }} miembros
+            </span>
+          </div>
+
+          <div class="mt-4">
+            <p class="text-sm text-gray-500">
+              Creado por:
+              <span class="font-medium text-gray-900">{{
+                group.creator?.name || "Desconocido"
+              }}</span>
+            </p>
+            <p class="text-xs text-gray-400 mt-1">
+              {{ group.createdAt | date : "short" }}
+            </p>
+          </div>
+
+          <!-- Members avatars -->
+          <div class="mt-4 flex -space-x-2 overflow-hidden">
+            <div
+              *ngFor="let member of group.members?.slice(0, 5)"
+              class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+            >
+              <img
+                *ngIf="member.user?.profilePictureUrl"
+                [src]="member.user?.profilePictureUrl"
+                [alt]="member.user?.name"
+                class="h-8 w-8 rounded-full object-cover"
+              />
+              <div
+                *ngIf="!member.user?.profilePictureUrl"
+                class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center"
+              >
+                <span class="text-xs font-medium text-gray-600">
+                  {{ member.user?.name?.charAt(0) || "?" }}
+                </span>
+              </div>
+            </div>
+            <span
+              *ngIf="(group.members?.length || 0) > 5"
+              class="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-white bg-gray-100 text-xs font-medium text-gray-500"
+            >
+              +{{ (group.members?.length || 0) - 5 }}
+            </span>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-6 flex justify-between items-center">
+            <a
+              [routerLink]="['/groups', group.id]"
+              class="text-sm font-medium text-blue-600 hover:text-blue-500"
+            >
+              Ver detalles →
+            </a>
+            <button
+              (click)="deleteGroup(group.id)"
+              class="text-sm font-medium text-red-600 hover:text-red-500"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="groups.length === 0" class="text-center py-12">
+      <svg
+        class="mx-auto h-12 w-12 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+        />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No hay grupos</h3>
+      <p class="mt-1 text-sm text-gray-500">Comienza creando un nuevo grupo.</p>
+    </div>
+  </div>
+</div>

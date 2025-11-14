@@ -1,0 +1,271 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <!-- Back Button & Header -->
+  <div class="mb-4">
+    <a
+      routerLink="/groups"
+      class="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+    >
+      ← Volver a grupos
+    </a>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-12">
+    <div
+      class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+    ></div>
+    <p class="mt-2 text-gray-600">Cargando...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="rounded-md bg-red-50 p-4">
+    <p class="text-sm text-red-800">{{ error }}</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error && group">
+    <!-- Group Header -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <div class="sm:flex sm:items-center sm:justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">{{ group.name }}</h1>
+          <p class="mt-1 text-sm text-gray-500">
+            Creado por {{ group.creator?.name }} • {{ members.length }} miembros
+            • {{ expenses.length }} gastos
+          </p>
+        </div>
+        <div class="mt-4 sm:mt-0 flex space-x-3">
+          <a
+            [routerLink]="['/groups', groupId, 'members', 'add']"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            Agregar miembro
+          </a>
+          <a
+            [routerLink]="['/groups', groupId, 'expenses', 'create']"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Agregar gasto
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 mb-6">
+      <nav class="-mb-px flex space-x-8">
+        <button
+          (click)="setActiveTab('expenses')"
+          [class.border-blue-500]="activeTab === 'expenses'"
+          [class.text-blue-600]="activeTab === 'expenses'"
+          class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Gastos
+        </button>
+        <button
+          (click)="setActiveTab('balances')"
+          [class.border-blue-500]="activeTab === 'balances'"
+          [class.text-blue-600]="activeTab === 'balances'"
+          class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Balances
+        </button>
+        <button
+          (click)="setActiveTab('stats')"
+          [class.border-blue-500]="activeTab === 'stats'"
+          [class.text-blue-600]="activeTab === 'stats'"
+          class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Estadísticas
+        </button>
+        <button
+          (click)="setActiveTab('members')"
+          [class.border-blue-500]="activeTab === 'members'"
+          [class.text-blue-600]="activeTab === 'members'"
+          class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+        >
+          Miembros
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tab: Expenses -->
+    <div *ngIf="activeTab === 'expenses'">
+      <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul class="divide-y divide-gray-200">
+          <li
+            *ngFor="let expense of expenses"
+            class="px-6 py-4 hover:bg-gray-50"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ expense.description }}
+                  </p>
+                </div>
+                <div class="mt-2 flex items-center text-sm text-gray-500">
+                  <span>Pagado por {{ expense.payer?.name }}</span>
+                  <span class="mx-2">•</span>
+                  <span>{{ expense.expenseDate }}</span>
+                  <span class="mx-2">•</span>
+                  <span>{{ expense.participants?.length }} participantes</span>
+                </div>
+              </div>
+              <p class="text-lg font-bold text-gray-900">
+                ${{ expense.totalAmount }}
+              </p>
+              <!-- <button (click)="deleteExpense(expense.id)" 
+                      class="ml-4 text-red-600 hover:text-red-800 text-sm">
+                Eliminar
+              </button> -->
+            </div>
+          </li>
+        </ul>
+        <div *ngIf="expenses.length === 0" class="text-center py-12">
+          <p class="text-gray-500">No hay gastos registrados</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Balances -->
+    <div *ngIf="activeTab === 'balances' && balances">
+      <!-- User Balances -->
+      <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Balance de cada miembro
+        </h3>
+        <div class="space-y-3">
+          <div
+            *ngFor="let userBalance of balances.userBalances"
+            class="flex items-center justify-between p-3 rounded-lg"
+            [class.bg-green-50]="userBalance.balance > 0"
+            [class.bg-red-50]="userBalance.balance < 0"
+            [class.bg-gray-50]="userBalance.balance === 0"
+          >
+            <span class="font-medium text-gray-900">{{
+              userBalance.userName
+            }}</span>
+            <span
+              class="text-lg font-bold"
+              [class.text-green-600]="userBalance.balance > 0"
+              [class.text-red-600]="userBalance.balance < 0"
+              [class.text-gray-600]="userBalance.balance === 0"
+            >
+              {{ userBalance.balance >= 0 ? "+" : "" }}${{
+                userBalance.balance
+              }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggested Settlements -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Liquidaciones sugeridas
+        </h3>
+        <div *ngIf="balances.suggestedSettlements.length > 0" class="space-y-3">
+          <div
+            *ngFor="let settlement of balances.suggestedSettlements"
+            class="flex items-center p-4 bg-blue-50 rounded-lg"
+          >
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">
+                <span class="text-blue-600">{{ settlement.fromUserName }}</span>
+                <span class="mx-2">→</span>
+                <span class="text-green-600">{{ settlement.toUserName }}</span>
+              </p>
+            </div>
+            <span class="text-lg font-bold text-gray-900"
+              >${{ settlement.amount }}</span
+            >
+          </div>
+        </div>
+        <div
+          *ngIf="balances.suggestedSettlements.length === 0"
+          class="text-center py-6"
+        >
+          <p class="text-gray-500">✅ Todos los gastos están saldados</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Members -->
+    <div *ngIf="activeTab === 'members'">
+      <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <ul class="divide-y divide-gray-200">
+          <li
+            *ngFor="let member of members"
+            class="px-6 py-4 flex items-center justify-between hover:bg-gray-50"
+          >
+            <div class="flex items-center">
+              <img
+                *ngIf="member.profilePictureUrl"
+                [src]="member.profilePictureUrl"
+                class="h-10 w-10 rounded-full object-cover"
+              />
+              <div
+                *ngIf="!member.profilePictureUrl"
+                class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
+              >
+                <span class="text-sm font-medium text-gray-600">{{
+                  member.name.charAt(0)
+                }}</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-gray-900">
+                  {{ member.name }}
+                </p>
+                <p class="text-sm text-gray-500">{{ member.email }}</p>
+              </div>
+            </div>
+            <!-- <button (click)="removeMember(member.id)" 
+                    class="text-red-600 hover:text-red-800 text-sm">
+              Eliminar
+            </button> -->
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab: Stats -->
+    <div *ngIf="activeTab === 'stats'">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Expense Chart -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <div style="height: 400px">
+            <canvas #expenseChart></canvas>
+          </div>
+        </div>
+
+        <!-- Balance Chart -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <div style="height: 400px">
+            <canvas #balanceChart></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white shadow rounded-lg p-6">
+          <p class="text-sm text-gray-500">Total de Gastos</p>
+          <p class="text-3xl font-bold text-gray-900">{{ expenses.length }}</p>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+          <p class="text-sm text-gray-500">Monto Total</p>
+          <p class="text-3xl font-bold text-gray-900">
+            ${{ getTotalAmount().toFixed(2) }}
+          </p>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+          <p class="text-sm text-gray-500">Promedio por Gasto</p>
+          <p class="text-3xl font-bold text-gray-900">
+            ${{ getAverageAmount().toFixed(2) }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
