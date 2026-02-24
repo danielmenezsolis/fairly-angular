@@ -1,7 +1,10 @@
+
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';          
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GroupService } from '../../../services/group.service';
+import { UserService } from '../../../services/user.service';
+import { AuthService } from '../../../services/auth.service';
 import { Group } from '../../../models/group.model';
 
 @Component({
@@ -15,24 +18,35 @@ export class GroupListComponent implements OnInit {
   groups: Group[] = [];
   loading = false;
   error = '';
-  constructor(private groupService: GroupService) { }
+  currentUser = this.authService.CurrentUserValue;
+
+  constructor(private groupService: GroupService,
+    private userService: UserService,
+    private authService: AuthService) { }
 
   ngOnInit(): void { 
     this.loadGroups();
   }
 
   loadGroups(): void {
+    if (!this.currentUser?.id) {
+      this.error = 'Usuario no autenticado';
+      return;
+    }
+
     this.loading = true;
     this.error = '';
-    this.groupService.getGroups().subscribe({
+    
+    // Obtener solo los grupos donde el usuario es miembro
+    this.userService.getUserGroups(this.currentUser.id).subscribe({
       next: (data) => {
         this.groups = data;
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Failed to load groups';
+        this.error = 'Error al cargar grupos: ' + err.message;
         this.loading = false;
-        console.error(err);
+        console.error('Error:', err);
       }
     });
   }

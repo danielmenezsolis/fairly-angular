@@ -248,6 +248,7 @@ getAverageAmount(): number {
   }
   
   loadExpenses():void {
+    
       this.groupService.getGroupExpenses(this.groupId).subscribe({
         next: (expenses) =>
         {
