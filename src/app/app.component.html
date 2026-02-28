@@ -1,76 +1,143 @@
 <div class="min-h-screen bg-gray-50">
   @if(authService.isLogged()) {
-  <nav class="bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex">
-          <div class="flex-shrink-0 flex items-center">
-            <h1 class="text-2xl font-bold text-blue-600">Fairly</h1>
-          </div>
-          <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-            <a
-              routerLink="/dashboard"
-              routerLinkActive="border-blue-500 text-gray-900"
-              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-            >
-              Dashboard
-            </a>
-            <!-- <a
-              routerLink="/users"
-              routerLinkActive="border-blue-500 text-gray-900"
-              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-            >
-              Usuarios
-            </a> -->
-            <a
-              routerLink="/groups"
-              routerLinkActive="border-blue-500 text-gray-900"
-              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-            >
-              Grupos
-            </a>
-          </div>
+  <nav class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center h-16">
+        
+        <!-- Logo -->
+        <div class="flex-shrink-0 mr-2">
+          <h1 class="text-2xl font-bold text-blue-600">Fairly</h1>
         </div>
 
-        <div class="flex items-center space-x-4">
-           <div class="flex flex-col items-center"> 
-                
-                <img *ngIf="authService.CurrentUserValue?.profilePictureUrl" 
-                       [src]="authService.CurrentUserValue?.profilePictureUrl" 
-                       [alt]="authService.CurrentUserValue?.name"
-                       class="h-8 w-8 rounded-full object-cover">
-                <div *ngIf="!authService.CurrentUserValue?.profilePictureUrl" 
-                       class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                    <span class="text-xs font-medium text-gray-600">
-                      {{ authService.CurrentUserValue?.name || 'A' }}
-                    </span>
-                </div>
+        <!-- Desktop Menu (visible en md y arriba) -->
+        <div class="hidden md:flex md:space-x-8 flex-1 justify-left">
+          <a
+            routerLink="/dashboard"
+            routerLinkActive="border-blue-500 text-gray-900"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 px-1 py-2 border-b-2 text-sm font-medium transition"
+          >
+            Dashboard
+          </a>
+          <a
+            routerLink="/groups"
+            routerLinkActive="border-blue-500 text-gray-900"
+            class="border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 px-1 py-2 border-b-2 text-sm font-medium transition"
+          >
+            Grupos
+          </a>
+        </div>
 
-                <p class="text-xs text-gray-600 font-medium mt-1"> 
-                    {{authService.CurrentUserValue?.name}}
-                </p> 
+        <!-- Desktop User Info (visible en md y arriba) -->
+        <div class="hidden md:flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
+            <img 
+              *ngIf="authService.CurrentUserValue?.profilePictureUrl" 
+              [src]="authService.CurrentUserValue?.profilePictureUrl" 
+              [alt]="authService.CurrentUserValue?.name"
+              class="h-8 w-8 rounded-full object-cover"
+            >
+            <div 
+              *ngIf="!authService.CurrentUserValue?.profilePictureUrl" 
+              class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center"
+            >
+              <span class="text-xs font-medium text-gray-600">
+                {{ authService.CurrentUserValue?.name?.charAt(0) || 'A' }}
+              </span>
             </div>
+            <span class="text-sm font-medium text-gray-700 hidden lg:inline">
+              {{authService.CurrentUserValue?.name}}
+            </span>
+          </div>
 
-          <button (click)="logout()" 
-             class="p-2 rounded-full text-gray-400 hover:text-red-600 hover:bg-gray-100 transition duration-150 relative group">
-                
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 3-3-3m0 0 3-3m-3 3h6" />
-                </svg>
-                
-                <span class="absolute right-full top-1/2 transform -translate-y-1/2 mr-3 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none whitespace-nowrap">
-                    Cerrar sesión
-
-                    
-                </span>
-            </button>
+          <button 
+            (click)="logout()" 
+            class="p-2 rounded-full text-gray-400 hover:text-red-600 hover:bg-gray-100 transition"
+            title="Cerrar sesión"
+          >
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 3-3-3m0 0 3-3m-3 3h6" />
+            </svg>
+          </button>
         </div>
+
+        <!-- Mobile Menu Button (visible solo en md abajo) -->
+        <button 
+          (click)="toggleMobileMenu()"
+          class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
+        >
+          @if(!mobileMenuOpen) {
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          } @else {
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          }
+        </button>
       </div>
+
+      <!-- Mobile Menu (visible solo en md abajo) -->
+      @if(mobileMenuOpen) {
+        <div class="md:hidden pb-4 space-y-2 border-t border-gray-200">
+          <a
+            routerLink="/dashboard"
+            (click)="closeMobileMenu()"
+            routerLinkActive="bg-blue-50 border-blue-500 text-blue-700"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="border-transparent text-gray-600 hover:bg-gray-50 block px-3 py-2 border-l-4 text-base font-medium transition"
+          >
+            Dashboard
+          </a>
+          <a
+            routerLink="/groups"
+            (click)="closeMobileMenu()"
+            routerLinkActive="bg-blue-50 border-blue-500 text-blue-700"
+            class="border-transparent text-gray-600 hover:bg-gray-50 block px-3 py-2 border-l-4 text-base font-medium transition"
+          >
+            Grupos
+          </a>
+          
+          <!-- Mobile User Info -->
+          <div class="px-3 py-3 border-t border-gray-200 mt-2 pt-3">
+            <div class="flex items-center space-x-3 mb-3">
+              <img 
+                *ngIf="authService.CurrentUserValue?.profilePictureUrl" 
+                [src]="authService.CurrentUserValue?.profilePictureUrl" 
+                [alt]="authService.CurrentUserValue?.name"
+                class="h-8 w-8 rounded-full object-cover"
+              >
+              <div 
+                *ngIf="!authService.CurrentUserValue?.profilePictureUrl" 
+                class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center"
+              >
+                <span class="text-xs font-medium text-gray-600">
+                  {{ authService.CurrentUserValue?.name?.charAt(0) || 'A' }}
+                </span>
+              </div>
+              <span class="text-sm font-medium text-gray-700">
+                {{authService.CurrentUserValue?.name}}
+              </span>
+            </div>
+            
+            <button 
+              (click)="logout()"
+              class="w-full text-left px-3 py-2 rounded-md text-red-600 hover:bg-red-50 transition font-medium text-sm flex items-center space-x-2"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 3-3-3m0 0 3-3m-3 3h6" />
+              </svg>
+              <span>Cerrar sesión</span>
+            </button>
+          </div>
+        </div>
+      }
     </div>
   </nav>
   }
 
-  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <router-outlet></router-outlet>
   </main>
 </div>

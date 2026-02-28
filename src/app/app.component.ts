@@ -13,11 +13,18 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent {
   title = 'fairly-app';
+  mobileMenuOpen = false;
 
   constructor( 
     public authService: AuthService,
     private router : Router){ }
 
+      toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
+  }
     logout() : void {
 
        this.authService.logout();
